@@ -2,11 +2,9 @@
 /**
  * Horde_ActiveSync_Folder_Imap::
  *
- * PHP Version 5
- *
  * @license   http://www.horde.org/licenses/gpl GPLv2
  *
- * @copyright 2012-2020 Horde LLC (http://www.horde.org)
+ * @copyright 2012-2026 Horde LLC (http://www.horde.org)
  * @author    Michael J Rubinsky <mrubinsk@horde.org>
  * @package   ActiveSync
  */
@@ -16,7 +14,7 @@
  *
  * @license   http://www.horde.org/licenses/gpl GPLv2
  *
- * @copyright 2012-2020 Horde LLC (http://www.horde.org)
+ * @copyright 2012-2026 Horde LLC (http://www.horde.org)
  * @author    Michael J Rubinsky <mrubinsk@horde.org>
  * @package   ActiveSync
  */
@@ -41,7 +39,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @var array
      */
-    protected $_messages = array();
+    protected $_messages = [];
 
     /**
      * Internal cache of message UIDs that have been added since last sync.
@@ -49,7 +47,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @var array
      */
-    protected $_added = array();
+    protected $_added = [];
 
     /**
      * Internal cache of message UIDs that have been modified on the server
@@ -57,7 +55,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @var array
      */
-    protected $_changed = array();
+    protected $_changed = [];
 
     /**
      * Internal cache of message UIDs that have been expunged from the IMAP
@@ -65,7 +63,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @var array
      */
-    protected $_removed = array();
+    protected $_removed = [];
 
     /**
      * Array of messages to be SOFTDELETEd from client. Only used when we have
@@ -74,7 +72,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @var array
      */
-    protected $_softDeleted = array();
+    protected $_softDeleted = [];
 
     /**
      * Internal cache of message flag changes. Should be one entry for each UID
@@ -84,7 +82,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @var array
      */
-    protected $_flags = array();
+    protected $_flags = [];
 
     /**
      * Internal cache of custom message flags (i.e., categories). Should contain
@@ -94,7 +92,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @var array
      */
-    protected $_categories = array();
+    protected $_categories = [];
 
     /**
      * Internal flag to indicate initial first sync/prime.
@@ -116,7 +114,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *                              being returned. @since 2.24.0
      */
     public function setChanges(
-        array $messages, array $flags = array(), array $categories = array(),
+        array $messages, array $flags = [], array $categories = [],
         $resetMinUid = false)
     {
         $uidnext = $this->uidnext();
@@ -231,7 +229,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *
      * @throws Horde_ActiveSync_Exception_StaleState
      */
-    public function checkValidity(array $params = array())
+    public function checkValidity(array $params = [])
     {
         if (!$this->uidvalidity()) {
             throw new Horde_ActiveSync_Exception('State not initialized.');
@@ -286,11 +284,11 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
         }
 
         // Clean up
-        $this->_removed = array();
-        $this->_added = array();
-        $this->_changed = array();
-        $this->_flags = array();
-        $this->_softDeleted = array();
+        $this->_removed   = [];
+        $this->_added     = [];
+        $this->_changed   = [];
+        $this->_flags     = [];
+        $this->_softDeleted = [];
         $this->haveInitialSync = true;
     }
 
@@ -315,9 +313,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      */
     public function uidnext()
     {
-        return empty($this->_status[self::UIDNEXT])
-            ? 0
-            : $this->_status[self::UIDNEXT];
+        return $this->_status[self::UIDNEXT] ?? 0;
     }
 
     /**
@@ -327,9 +323,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      */
     public function modseq()
     {
-        return empty($this->_status[self::HIGHESTMODSEQ])
-            ? 0
-            : $this->_status[self::HIGHESTMODSEQ];
+        return $this->_status[self::HIGHESTMODSEQ] ?? 0;
     }
 
     /**
@@ -339,9 +333,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      */
     public function total_messages()
     {
-        return empty($this->_status[self::MESSAGES])
-            ? 0
-            : $this->_status[self::MESSAGES];
+        return $this->_status[self::MESSAGES] ?? 0;
     }
 
     /**
@@ -431,24 +423,34 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      */
     public function serialize()
     {
+        return json_encode($this->__serialize());
+    }
+
+    /**
+     * Serialize this object (modern PHP 8.1+ interface).
+     *
+     * @return array  The data to serialize.
+     */
+    public function __serialize(): array
+    {
         if (!empty($this->_status[self::HIGHESTMODSEQ])) {
-             $msgs = (count($this->_messages) > self::COMPRESSION_LIMIT) ?
-                $this->_toSequenceString($this->_messages) :
-                implode(',', $this->_messages);
+            $msgs = (count($this->_messages) > self::COMPRESSION_LIMIT)
+                ? $this->_toSequenceString($this->_messages)
+                : implode(',', $this->_messages);
         } else {
             $msgs = $this->_messages;
         }
 
-        return json_encode(array(
-            's' => $this->_status,
-            'm' => $msgs,
-            'f' => $this->_serverid,
-            'c' => $this->_class,
+        return [
+            's'   => $this->_status,
+            'm'   => $msgs,
+            'f'   => $this->_serverid,
+            'c'   => $this->_class,
             'lsd' => $this->_lastSinceDate,
-            'sd' => $this->_softDelete,
-            'hi' => $this->haveInitialSync,
-            'v' => self::VERSION)
-        );
+            'sd'  => $this->_softDelete,
+            'hi'  => $this->haveInitialSync,
+            'v'   => self::VERSION,
+        ];
     }
 
     /**
@@ -458,22 +460,38 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      * @throws Horde_ActiveSync_Exception_StaleState
      */
     public function unserialize($data)
-    {   $d_data = json_decode($data, true);
-        if (!is_array($d_data) || empty($d_data['v']) || $d_data['v'] != self::VERSION) {
+    {
+        $d_data = json_decode($data, true);
+        if (!is_array($d_data) || ($d_data['v'] ?? null) !== self::VERSION) {
             // Try using the old serialization strategy, since this would save
             // an expensive resync of email collections.
             $d_data = @unserialize($data);
-            if (!is_array($d_data) || empty($d_data['v']) || $d_data['v'] != 1) {
+            if (!is_array($d_data) || ($d_data['v'] ?? null) !== 1) {
                 throw new Horde_ActiveSync_Exception_StaleState('Cache version change');
             }
+            $d_data['v'] = self::VERSION;
         }
-        $this->_status = $d_data['s'];
-        $this->_messages = $d_data['m'];
-        $this->_serverid = $d_data['f'];
-        $this->_class = $d_data['c'];
-        $this->_lastSinceDate = $d_data['lsd'];
-        $this->_softDelete = $d_data['sd'];
-        $this->haveInitialSync = empty($d_data['hi']) ? !empty($this->_messages) : $d_data['hi'];
+        $this->__unserialize($d_data);
+    }
+
+    /**
+     * Reconstruct the object from serialized data (modern PHP 8.1+ interface).
+     *
+     * @param array $data  The unserialized data.
+     * @throws Horde_ActiveSync_Exception_StaleState
+     */
+    public function __unserialize(array $data): void
+    {
+        if (($data['v'] ?? null) !== self::VERSION) {
+            throw new Horde_ActiveSync_Exception_StaleState('Cache version change');
+        }
+        $this->_status        = $data['s'];
+        $this->_messages      = $data['m'];
+        $this->_serverid      = $data['f'];
+        $this->_class         = $data['c'];
+        $this->_lastSinceDate = $data['lsd'] ?? 0;
+        $this->_softDelete    = $data['sd'] ?? 0;
+        $this->haveInitialSync = $data['hi'] ?? !empty($this->_messages);
 
         if (!empty($this->_status[self::HIGHESTMODSEQ]) && is_string($this->_messages)) {
             $this->_messages = $this->_fromSequenceString($this->_messages);
@@ -515,15 +533,15 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
         sort($in, SORT_NUMERIC);
         $first = $last = array_shift($in);
         $i = count($in) - 1;
-        $out = array();
+        $out = [];
 
         reset($in);
         foreach ($in as $key => $val) {
-            if (($last + 1) == $val) {
+            if ($last + 1 == $val) {
                 $last = $val;
             }
 
-            if (($i == $key) || ($last != $val)) {
+            if ($i == $key || $last != $val) {
                 if ($last == $first) {
                     $out[] = $first;
                     if ($i == $key) {
@@ -531,7 +549,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
                     }
                 } else {
                     $out[] = $first . ':' . $last;
-                    if (($i == $key) && ($last != $val)) {
+                    if ($i == $key && $last != $val) {
                         $out[] = $val;
                     }
                 }
@@ -555,7 +573,7 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      */
     protected function _fromSequenceString($str)
     {
-        $ids = array();
+        $ids = [];
         $str = trim($str);
 
         if (!strlen($str)) {
