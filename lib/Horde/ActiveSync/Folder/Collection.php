@@ -4,7 +4,7 @@
  *
  * @license   http://www.horde.org/licenses/gpl GPLv2
  *
- * @copyright 2012-2020 Horde LLC (http://www.horde.org)
+ * @copyright 2012-2026 Horde LLC (http://www.horde.org)
  * @author    Michael J Rubinsky <mrubinsk@horde.org>
  * @package   ActiveSync
  */
@@ -14,7 +14,7 @@
  *
  * @license   http://www.horde.org/licenses/gpl GPLv2
  *
- * @copyright 2012-2020 Horde LLC (http://www.horde.org)
+ * @copyright 2012-2026 Horde LLC (http://www.horde.org)
  * @author    Michael J Rubinsky <mrubinsk@horde.org>
  * @package   ActiveSync
  */
@@ -51,15 +51,25 @@ class Horde_ActiveSync_Folder_Collection extends Horde_ActiveSync_Folder_Base im
      */
     public function serialize()
     {
-        return json_encode(array(
+        return json_encode($this->__serialize());
+    }
+
+    /**
+     * Serialize this object (modern PHP 8.1+ interface).
+     *
+     * @return array  The data to serialize.
+     */
+    public function __serialize(): array
+    {
+        return [
             's' => $this->_status,
             'f' => $this->_serverid,
             'c' => $this->_class,
             'lsd' => $this->_lastSinceDate,
             'sd' => $this->_softDelete,
             'i' => $this->haveInitialSync,
-            'v' => self::VERSION)
-        );
+            'v' => self::VERSION,
+        ];
     }
 
     /**
@@ -70,8 +80,23 @@ class Horde_ActiveSync_Folder_Collection extends Horde_ActiveSync_Folder_Base im
      */
     public function unserialize($data)
     {
-       $data = @json_decode($data, true);
-        if (!is_array($data) || empty($data['v']) || $data['v'] != self::VERSION) {
+        $decoded = @json_decode($data, true);
+        if (!is_array($decoded)) {
+            throw new Horde_ActiveSync_Exception_StaleState('Cache version change');
+        }
+        $this->__unserialize($decoded);
+    }
+
+    /**
+     * Reconstruct the object from serialized data (modern PHP 8.1+ interface).
+     *
+     * @param array $data  The serialized data.
+     * @throws Horde_ActiveSync_Exception_StaleState
+     */
+    public function __unserialize(array $data): void
+    {
+        $version = $data['v'] ?? null;
+        if ($version !== self::VERSION) {
             throw new Horde_ActiveSync_Exception_StaleState('Cache version change');
         }
         $this->_status = $data['s'];
