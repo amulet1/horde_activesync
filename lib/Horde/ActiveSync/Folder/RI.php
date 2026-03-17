@@ -4,7 +4,7 @@
  *
  * @license   http://www.horde.org/licenses/gpl GPLv2
  *
- * @copyright 2014-2020 Horde LLC (http://www.horde.org)
+ * @copyright 2014-2026 Horde LLC (http://www.horde.org)
  * @author    Michael J Rubinsky <mrubinsk@horde.org>
  * @package   ActiveSync
  */
@@ -14,7 +14,7 @@
  *
  * @license   http://www.horde.org/licenses/gpl GPLv2
  *
- * @copyright 2014-2020 Horde LLC (http://www.horde.org)
+ * @copyright 2014-2026 Horde LLC (http://www.horde.org)
  * @author    Michael J Rubinsky <mrubinsk@horde.org>
  * @package   ActiveSync
  */
@@ -27,10 +27,10 @@ class Horde_ActiveSync_Folder_RI extends Horde_ActiveSync_Folder_Base implements
      *
      * @var array
      */
-    protected $_contacts = array();
+    protected $_contacts = [];
     protected $_serverid = 'RI';
-    protected $_removed = array();
-    protected $_added = array();
+    protected $_removed = [];
+    protected $_added = [];
 
     /**
      * Set the current Recipient Cache
@@ -43,14 +43,14 @@ class Horde_ActiveSync_Folder_RI extends Horde_ActiveSync_Folder_Base implements
 
         // Calculate deletions.
         foreach ($this->_contacts as $weight => $email) {
-            if (empty($contacts[$weight]) || $contacts[$weight] != $email) {
+            if (($contacts[$weight] ?? null) !== $email) {
                 $this->_removed[] = $email . ':' . $weight;
             }
         }
 
         // Additions
         foreach ($contacts as $weight => $email) {
-            if (empty($this->_contacts[$weight]) || $this->_contacts[$weight] != $email) {
+            if (($this->_contacts[$weight] ?? null) !== $email) {
                 $this->_added[] = $email . ':' . $weight;
             }
         }
@@ -65,8 +65,8 @@ class Horde_ActiveSync_Folder_RI extends Horde_ActiveSync_Folder_Base implements
     public function updateState()
     {
         $this->haveInitialSync = true;
-        $this->_removed = array();
-        $this->_added = array();
+        $this->_removed = [];
+        $this->_added = [];
     }
 
     /**
@@ -113,12 +113,22 @@ class Horde_ActiveSync_Folder_RI extends Horde_ActiveSync_Folder_Base implements
      */
     public function serialize()
     {
-        return json_encode(array(
+        return json_encode($this->__serialize());
+    }
+
+    /**
+     * Serialize this object (modern PHP 8.1+ interface).
+     *
+     * @return array  The data to serialize.
+     */
+    public function __serialize(): array
+    {
+        return [
             'd' => $this->_contacts,
             'f' => $this->_serverid,
             'c' => $this->_class,
-            'v' => self::VERSION)
-        );
+            'v' => self::VERSION,
+        ];
     }
 
     /**
@@ -129,13 +139,27 @@ class Horde_ActiveSync_Folder_RI extends Horde_ActiveSync_Folder_Base implements
      */
     public function unserialize($data)
     {
-       $data = @json_decode($data, true);
-        if (!is_array($data) || empty($data['v']) || $data['v'] != self::VERSION) {
+        $data = @json_decode($data, true);
+        if (!is_array($data)) {
+            throw new Horde_ActiveSync_Exception_StaleState('Cache version change');
+        }
+        $this->__unserialize($data);
+    }
+
+    /**
+     * Reconstruct the object from serialized data (modern PHP 8.1+ interface).
+     *
+     * @param array $data  The unserialized data.
+     * @throws Horde_ActiveSync_Exception_StaleState
+     */
+    public function __unserialize(array $data): void
+    {
+        if (($data['v'] ?? null) != self::VERSION) {
             throw new Horde_ActiveSync_Exception_StaleState('Cache version change');
         }
         $this->_contacts = $data['d'];
         $this->_serverid = $data['f'];
-        $this->_class = $data['c'];
+        $this->_class    = $data['c'];
     }
 
 }
