@@ -47,4 +47,4 @@ dependencies:
       horde/mongo: ^2
       horde/text_filter: ^3
       horde/test: ^3
-vendor: horde
+vendor: horde6

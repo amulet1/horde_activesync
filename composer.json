@@ -1,5 +1,8 @@
 {
-    "name": "horde/activesync",
+    "name": "horde6/activesync",
+    "replace": {
+        "horde/activesync": "self.version"
+    },
     "description": "ActiveSync server library",
     "type": "horde-library",
     "homepage": "https://www.horde.org/libraries/Horde_ActiveSync",
