@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Compatibility wrapper used to maintain BC with old style of log handling.
  * Will be removed in version 3.0.0 for Horde 6.
@@ -57,19 +58,19 @@ class Horde_ActiveSync_Log_Logger_Deprecated extends Horde_Log_Logger
         if (!isset($this->_levels[$levelName])) {
             throw new Horde_Log_Exception('Bad log level ' . $levelName);
         }
-        if (in_array($method, array('client', 'server', 'meta'))) {
+        if (in_array($method, ['client', 'server', 'meta'])) {
             switch ($method) {
-            case 'client':
-                $pre = 'I ';
-                break;
-            case 'server':
-                $pre = 'O ';
-                break;
-            default:
-                $pre = '';
-                $params[1] = 0;
+                case 'client':
+                    $pre = 'I ';
+                    break;
+                case 'server':
+                    $pre = 'O ';
+                    break;
+                default:
+                    $pre = '';
+                    $params[1] = 0;
             }
-            $message = sprintf('[%s] %s%s ', getmypid(), $pre, str_repeat(' ' , $params[1]));
+            $message = sprintf('[%s] %s%s ', getmypid(), $pre, str_repeat(' ', $params[1]));
             if (is_resource($params[0])) {
                 rewind($params[0]);
                 $message .= stream_get_contents($params[0]);
@@ -77,17 +78,17 @@ class Horde_ActiveSync_Log_Logger_Deprecated extends Horde_Log_Logger
             } else {
                 $message .= $params[0];
             }
-            $event = array(
+            $event = [
                 'message' => $message,
                 'indent' => $params[1],
-                'level' => $this->_levels['DEBUG']
-            );
+                'level' => $this->_levels['DEBUG'],
+            ];
         } else {
-            $event = array(
+            $event = [
                 'message' => array_shift($params),
                 'level' =>  $this->_levels[$levelName],
-                'indent' => 0
-            );
+                'indent' => 0,
+            ];
         }
 
         $this->_logger->log($event);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Michael J Rubinsky <mrubinsk@horde.org>
  * @license http://www.horde.org/licenses/gpl GPLv2
@@ -6,7 +7,9 @@
  * @package Horde_ActiveSync
  * @subpackage UnitTests
  */
+
 namespace Horde\ActiveSync\StateTest\Sql;
+
 use Horde\ActiveSync\StateTest\TestBase as ExtTestBase;
 
 class TestBase extends ExtTestBase
@@ -204,8 +207,9 @@ class TestBase extends ExtTestBase
             self::$migrator = new Horde_Db_Migration_Migrator(
                 self::$db,
                 self::$logger->getLogger(),
-                array('migrationsPath' => $dir,
-                      'schemaTableName' => 'horde_activesync_schema_info'));
+                ['migrationsPath' => $dir,
+                    'schemaTableName' => 'horde_activesync_schema_info']
+            );
             self::$migrator->up();
         }
     }
@@ -228,7 +232,7 @@ class TestBase extends ExtTestBase
             $this->markTestSkipped(self::$reason);
             return;
         }
-        self::$state = new Horde_ActiveSync_State_Sql(array('db' => self::$db));
+        self::$state = new Horde_ActiveSync_State_Sql(['db' => self::$db]);
         $backend = $this->getMockBuilder('Horde_ActiveSync_Driver_Base')->disableOriginalConstructor()->getMock();
         $backend->expects($this->any())->method('getUser')->will($this->returnValue('mike'));
         self::$state->setBackend($backend);

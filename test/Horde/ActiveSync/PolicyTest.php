@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Unit tests for Horde_ActiveSync_Policies
  *
@@ -6,11 +7,13 @@
  * @category Horde
  * @package ActiveSync
  */
+
 namespace Horde\ActiveSync;
+
 use Horde_Test_Case as TestCase;
-use \Horde_ActiveSync_Wbxml_Encoder;
-use \Horde_Mime_Headers;
-use \Horde_ActiveSync_Policies;
+use Horde_ActiveSync_Wbxml_Encoder;
+use Horde_Mime_Headers;
+use Horde_ActiveSync_Policies;
 
 class PolicyTest extends TestCase
 {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde_ActiveSync_Folder_Imap::
  *
@@ -21,16 +22,16 @@
 class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implements Serializable
 {
     /* Key names for various IMAP server status values */
-    const UIDVALIDITY    = 'uidvalidity';
-    const UIDNEXT        = 'uidnext';
-    const HIGHESTMODSEQ  = 'highestmodseq';
-    const MESSAGES       = 'messages';
+    public const UIDVALIDITY    = 'uidvalidity';
+    public const UIDNEXT        = 'uidnext';
+    public const HIGHESTMODSEQ  = 'highestmodseq';
+    public const MESSAGES       = 'messages';
 
     /* Serialize version */
-    const VERSION        = 2;
+    public const VERSION        = 2;
 
     /* The UID count at which UID lists will be compressed before serialization */
-    const COMPRESSION_LIMIT = 500;
+    public const COMPRESSION_LIMIT = 500;
 
     /**
      * The folder's current message list.
@@ -114,9 +115,11 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
      *                              being returned. @since 2.24.0
      */
     public function setChanges(
-        array $messages, array $flags = [], array $categories = [],
-        $resetMinUid = false)
-    {
+        array $messages,
+        array $flags = [],
+        array $categories = [],
+        $resetMinUid = false
+    ) {
         $uidnext = $this->uidnext();
         $minuid = $this->minuid();
         $modseq = $this->modseq();
@@ -140,8 +143,8 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
                         // Do not know about this message
                         continue;
                     }
-                    if ((isset($flags[$uid]['read']) && $flags[$uid]['read'] != $this->_messages[$uid]['read']) ||
-                        (isset($flags[$uid]['flagged']) && $flags[$uid]['flagged'] != $this->_messages[$uid]['flagged'])) {
+                    if ((isset($flags[$uid]['read']) && $flags[$uid]['read'] != $this->_messages[$uid]['read'])
+                        || (isset($flags[$uid]['flagged']) && $flags[$uid]['flagged'] != $this->_messages[$uid]['flagged'])) {
 
                         $this->_changed[] = $uid;
                     }
@@ -251,7 +254,8 @@ class Horde_ActiveSync_Folder_Imap extends Horde_ActiveSync_Folder_Base implemen
         if (count($uids)) {
             if ($uids[0] < $this->minuid()) {
                 throw new Horde_ActiveSync_Exception_StaleState(
-                    'BROKEN IMAP server has returned all VANISHED UIDs.');
+                    'BROKEN IMAP server has returned all VANISHED UIDs.'
+                );
             }
         }
 

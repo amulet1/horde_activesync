@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Unit tests for Autodiscover functionality.
  *
@@ -6,7 +7,9 @@
  * @category Horde
  * @package ActiveSync
  */
+
 namespace Horde\ActiveSync;
+
 use Horde_Test_Case as TestCase;
 use Horde\ActiveSync\Factory\TestServer;
 
@@ -22,16 +25,16 @@ class AutodiscoverTest extends TestCase
         $factory = new TestServer();
 
         $request = <<<EOT
-<?xml version="1.0" encoding="utf-8"?>
-<Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/requestschema/2006">
-<Request>
-<EMailAddress>mike@example.com</EMailAddress>
-<AcceptableResponseSchema>
-http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006
-</AcceptableResponseSchema>
-</Request>
-</Autodiscover>
-EOT;
+            <?xml version="1.0" encoding="utf-8"?>
+            <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/requestschema/2006">
+            <Request>
+            <EMailAddress>mike@example.com</EMailAddress>
+            <AcceptableResponseSchema>
+            http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006
+            </AcceptableResponseSchema>
+            </Request>
+            </Autodiscover>
+            EOT;
         fwrite($factory->input, $request);
         rewind($factory->input);
 
@@ -39,12 +42,12 @@ EOT;
         // is passed.
         $factory->driver->expects($this->once())
             ->method('getUsernameFromEmail')
-            ->will($this->returnValueMap(array(array('mike@example.com', 'mike'))));
+            ->will($this->returnValueMap([['mike@example.com', 'mike']]));
 
         // Mock authenticate to return true only if mike is passed as username.
         $factory->driver->expects($this->any())
             ->method('authenticate')
-            ->will($this->returnValueMap(array(array('mike', 'password', null, true))));
+            ->will($this->returnValueMap([['mike', 'password', null, true]]));
 
         // Setup is called once, and must return true.
         $factory->driver->expects($this->once())
@@ -52,47 +55,47 @@ EOT;
             ->will($this->returnValue(true));
 
         // Checks that the correct schema was detected.
-        $mock_driver_parameters = array(
+        $mock_driver_parameters = [
             'request_schema' => 'http://schemas.microsoft.com/exchange/autodiscover/mobilesync/requestschema/2006',
-            'response_schema' => 'http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006');
+            'response_schema' => 'http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006'];
 
         // ...and will only return this if it was.
-        $mock_driver_results = array(
+        $mock_driver_results = [
             'display_name' => 'Michael Rubinsky',
             'email' => 'mike@example.com',
             'culture' => 'en:en',
             'username' => 'mike',
-            'url' => 'https://example.com/Microsoft-Server-ActiveSync'
-        );
+            'url' => 'https://example.com/Microsoft-Server-ActiveSync',
+        ];
 
         $factory->driver->expects($this->once())
             ->method('autoDiscover')
-            ->will($this->returnValueMap(array(array($mock_driver_parameters, $mock_driver_results))));
+            ->will($this->returnValueMap([[$mock_driver_parameters, $mock_driver_results]]));
 
         $factory->server->handleRequest('Autodiscover', 'testdevice');
 
         // Test the results
         $expected = <<<EOT
-<?xml version="1.0" encoding="utf-8"?>
-              <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
-                <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
-                  <Culture>en:en</Culture>
-                  <User>
-                    <DisplayName>Michael Rubinsky</DisplayName>
-                    <EMailAddress>mike@example.com</EMailAddress>
-                  </User>
-                  <Action>
-                    <Settings>
-                      <Server>
-                        <Type>MobileSync</Type>
-                        <Url>https://example.com/Microsoft-Server-ActiveSync</Url>
-                        <Name>https://example.com/Microsoft-Server-ActiveSync</Name>
-                       </Server>
-                    </Settings>
-                  </Action>
-                </Response>
-              </Autodiscover>
-EOT;
+            <?xml version="1.0" encoding="utf-8"?>
+                          <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
+                            <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
+                              <Culture>en:en</Culture>
+                              <User>
+                                <DisplayName>Michael Rubinsky</DisplayName>
+                                <EMailAddress>mike@example.com</EMailAddress>
+                              </User>
+                              <Action>
+                                <Settings>
+                                  <Server>
+                                    <Type>MobileSync</Type>
+                                    <Url>https://example.com/Microsoft-Server-ActiveSync</Url>
+                                    <Name>https://example.com/Microsoft-Server-ActiveSync</Name>
+                                   </Server>
+                                </Settings>
+                              </Action>
+                            </Response>
+                          </Autodiscover>
+            EOT;
         $factory->server->encoder->getStream()->rewind();
         $this->assertEquals($expected, $factory->server->encoder->getStream()->getString());
     }
@@ -109,19 +112,19 @@ EOT;
         $factory = new TestServer();
         $factory->request->expects($this->any())
             ->method('getServerVars')
-            ->will($this->returnValue(array('HTTP_AUTHORIZATION' => $auth)));
+            ->will($this->returnValue(['HTTP_AUTHORIZATION' => $auth]));
 
         // Mock the getUsernameFromEmail method to return 'mike' when 'mike'
         // is passed.
         $factory->driver->expects($this->once())
             ->method('getUsernameFromEmail')
-            ->will($this->returnValueMap(array(array('mike', 'mike'))));
+            ->will($this->returnValueMap([['mike', 'mike']]));
 
         // Mock authenticate to return true only if 'mike' is passed as username
         // and 'password' is passed as the password.
         $factory->driver->expects($this->any())
             ->method('authenticate')
-            ->will($this->returnValueMap(array(array('mike', 'password', null, true))));
+            ->will($this->returnValueMap([['mike', 'password', null, true]]));
 
         // Setup is called once, and must return true.
         $factory->driver->expects($this->once())
@@ -129,47 +132,47 @@ EOT;
             ->will($this->returnValue(true));
 
         // Checks that the correct schema was detected.
-        $mock_driver_parameters = array(
+        $mock_driver_parameters = [
             'request_schema' => 'http://schemas.microsoft.com/exchange/autodiscover/mobilesync/requestschema/2006',
-            'response_schema' => 'http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006');
+            'response_schema' => 'http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006'];
 
         // ...and will only return this if it was.
-        $mock_driver_results = array(
+        $mock_driver_results = [
             'display_name' => 'Michael Rubinsky',
             'email' => 'mike@example.com',
             'culture' => 'en:en',
             'username' => 'mike',
-            'url' => 'https://example.com/Microsoft-Server-ActiveSync'
-        );
+            'url' => 'https://example.com/Microsoft-Server-ActiveSync',
+        ];
 
         $factory->driver->expects($this->once())
             ->method('autoDiscover')
-            ->will($this->returnValueMap(array(array($mock_driver_parameters, $mock_driver_results))));
+            ->will($this->returnValueMap([[$mock_driver_parameters, $mock_driver_results]]));
 
         $factory->server->handleRequest('Autodiscover', 'testdevice');
 
         // Test the results
         $expected = <<<EOT
-<?xml version="1.0" encoding="utf-8"?>
-              <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
-                <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
-                  <Culture>en:en</Culture>
-                  <User>
-                    <DisplayName>Michael Rubinsky</DisplayName>
-                    <EMailAddress>mike@example.com</EMailAddress>
-                  </User>
-                  <Action>
-                    <Settings>
-                      <Server>
-                        <Type>MobileSync</Type>
-                        <Url>https://example.com/Microsoft-Server-ActiveSync</Url>
-                        <Name>https://example.com/Microsoft-Server-ActiveSync</Name>
-                       </Server>
-                    </Settings>
-                  </Action>
-                </Response>
-              </Autodiscover>
-EOT;
+            <?xml version="1.0" encoding="utf-8"?>
+                          <Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
+                            <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/mobilesync/responseschema/2006">
+                              <Culture>en:en</Culture>
+                              <User>
+                                <DisplayName>Michael Rubinsky</DisplayName>
+                                <EMailAddress>mike@example.com</EMailAddress>
+                              </User>
+                              <Action>
+                                <Settings>
+                                  <Server>
+                                    <Type>MobileSync</Type>
+                                    <Url>https://example.com/Microsoft-Server-ActiveSync</Url>
+                                    <Name>https://example.com/Microsoft-Server-ActiveSync</Name>
+                                   </Server>
+                                </Settings>
+                              </Action>
+                            </Response>
+                          </Autodiscover>
+            EOT;
         $factory->server->encoder->getStream()->rewind();
         $this->assertEquals($expected, $factory->server->encoder->getStream()->getString());
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Michael J Rubinsky <mrubinsk@horde.org>
  * @license http://www.horde.org/licenses/gpl GPLv2
@@ -6,7 +7,9 @@
  * @package Horde_ActiveSync
  * @subpackage UnitTests
  */
+
 namespace Horde\ActiveSync\StateTest\Mongo;
+
 use Horde\ActiveSync\StateTest\TestBase;
 
 class BaseTest extends TestBase
@@ -41,12 +44,12 @@ class BaseTest extends TestBase
     public function testDuplicatePIMAddition()
     {
         // @TODO. For now, cheat and add the data directly to the db.
-        $doc = array(
+        $doc = [
             'sync_clientid' => 'abc',
             'sync_user' => 'mike',
             'message_uid' => 'def',
-            'sync_devid' => 'dev123'
-        );
+            'sync_devid' => 'dev123',
+        ];
         self::$mongo->horde_activesync_test->HAS_map->insert($doc);
         self::$state->loadDeviceInfo('dev123', 'mike');
         $this->assertEquals('def', self::$state->isDuplicatePIMAddition('abc'));
@@ -206,24 +209,24 @@ class BaseTest extends TestBase
 
     public static function setUpBeforeClass(): void
     {
-        if (!(extension_loaded('mongo') || extension_loaded('mongodb')) ||
-            !class_exists('Horde_Mongo_Client')) {
+        if (!(extension_loaded('mongo') || extension_loaded('mongodb'))
+            || !class_exists('Horde_Mongo_Client')) {
             self::$reason = 'MongoDB extension not loaded.';
             return;
         }
-        if (($config = self::getConfig('ACTIVESYNC_MONGO_TEST_CONFIG', __DIR__ . '/../..')) &&
-            isset($config['activesync']['mongo']['hostspec'])) {
+        if (($config = self::getConfig('ACTIVESYNC_MONGO_TEST_CONFIG', __DIR__ . '/../..'))
+            && isset($config['activesync']['mongo']['hostspec'])) {
             $factory = new Horde_Test_Factory_Mongo();
-            self::$mongo = $factory->create(array(
+            self::$mongo = $factory->create([
                 'config' => $config['activesync']['mongo']['hostspec'],
-                'dbname' => 'horde_activesync_test'
-            ));
+                'dbname' => 'horde_activesync_test',
+            ]);
         }
         if (empty(self::$mongo)) {
             self::$reason = 'Mongo connection failed.';
             return;
         }
-        self::$state = new Horde_ActiveSync_State_Mongo(array('connection' => self::$mongo));
+        self::$state = new Horde_ActiveSync_State_Mongo(['connection' => self::$mongo]);
         self::$logger = new Horde_Test_Log();
     }
 
@@ -239,16 +242,16 @@ class BaseTest extends TestBase
 
     public static function tearDownAfterClass(): void
     {
-        if ((extension_loaded('mongo') || extension_loaded('mongodb')) &&
-            class_exists('Horde_Mongo_Client') &&
-            ($config = self::getConfig('ACTIVESYNC_MONGO_TEST_CONFIG', __DIR__ . '/../..')) &&
-            isset($config['activesync']['mongo']['hostspec'])) {
+        if ((extension_loaded('mongo') || extension_loaded('mongodb'))
+            && class_exists('Horde_Mongo_Client')
+            && ($config = self::getConfig('ACTIVESYNC_MONGO_TEST_CONFIG', __DIR__ . '/../..'))
+            && isset($config['activesync']['mongo']['hostspec'])) {
             try {
                 $factory = new Horde_Test_Factory_Mongo();
-                $mongo = $factory->create(array(
+                $mongo = $factory->create([
                     'config' => $config['activesync']['mongo']['hostspec'],
-                    'dbname' => 'horde_activesync_test'
-                ));
+                    'dbname' => 'horde_activesync_test',
+                ]);
                 $mongo->activesync_test->drop();
             } catch (MongoConnectionException $e) {
             }

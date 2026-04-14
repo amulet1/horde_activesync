@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unit tests for the syncCache
  *
@@ -6,9 +7,11 @@
  * @category Horde
  * @package ActiveSync
  */
+
 namespace Horde\ActiveSync;
+
 use Horde_Test_Case as TestCase;
-use \Horde_ActiveSync_SyncCache;
+use Horde_ActiveSync_SyncCache;
 
 class CacheTest extends TestCase
 {
@@ -43,9 +46,9 @@ class CacheTest extends TestCase
     {
         $cache = new Horde_ActiveSync_SyncCache($this->_state, 'devid', 'userone');
         $cache->save();
-        foreach (array('hbinterval', 'wait', 'hierarchy', 'confirmed_synckeys',
+        foreach (['hbinterval', 'wait', 'hierarchy', 'confirmed_synckeys',
             'lasthbsyncstarted', 'lastsyncendnormal', 'folders', 'pingheartbeat',
-            'timestamp') as $p) {
+            'timestamp'] as $p) {
 
             $cache->{$p};
         }

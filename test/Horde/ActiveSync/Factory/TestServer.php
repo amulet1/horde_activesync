@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2014-2017 Horde LLC (http://www.horde.org/)
  *
@@ -12,11 +13,13 @@
  * @package   Horde_ActiveSync
  * @subpackage UnitTests
  */
+
 namespace Horde\ActiveSync\Factory;
+
 use Horde_Test_Case as TestCase;
-use \Horde_ActiveSync_Wbxml_Decoder;
-use \Horde_ActiveSync_Wbxml_Encoder;
-use \Horde_ActiveSync;
+use Horde_ActiveSync_Wbxml_Decoder;
+use Horde_ActiveSync_Wbxml_Encoder;
+use Horde_ActiveSync;
 
 /**
  * Factory to provide various test servers.
@@ -38,8 +41,8 @@ class TestServer extends TestCase
     public $_output;
     public $request;
 
-    public function __construct($params = array())
-    {        
+    public function __construct($params = [])
+    {
         $this->driver = $this->getMockBuilder('Horde_ActiveSync_Driver_Base')
                                 ->disableOriginalConstructor()
                                 ->getMock();
@@ -60,7 +63,7 @@ class TestServer extends TestCase
             ->will($this->returnValue('14.1'));
         $this->request->expects($this->any())
             ->method('getServerVars')
-            ->will($this->returnValue(array('PHP_AUTH_USER' => 'mike', 'PHP_AUTH_PW' => 'password')));
+            ->will($this->returnValue(['PHP_AUTH_USER' => 'mike', 'PHP_AUTH_PW' => 'password']));
         $this->server = new Horde_ActiveSync($this->driver, $decoder, $encoder, $state, $this->request);
     }
 

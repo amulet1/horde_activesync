@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Unit tests for Horde_ActiveSync_Policies
  *
@@ -6,10 +7,12 @@
  * @category Horde
  * @package ActiveSync
  */
+
 namespace Horde\ActiveSync;
+
 use Horde_Test_Case as TestCase;
 use Horde\ActiveSync\Factory\TestServer;
-use \Horde_ActiveSync;
+use Horde_ActiveSync;
 
 class ServerTest extends TestCase
 {

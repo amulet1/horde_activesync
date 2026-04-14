@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Michael J Rubinsky <mrubinsk@horde.org>
  * @license http://www.horde.org/licenses/gpl GPLv2
@@ -6,7 +7,9 @@
  * @package Horde_ActiveSync
  * @subpackage UnitTests
  */
+
 namespace Horde\ActiveSync\StateTest;
+
 use Horde_Test_Case as TestCase;
 
 class TestBase extends TestCase
@@ -17,7 +20,7 @@ class TestBase extends TestCase
     protected function _testGetDeviceInfo()
     {
         // First with no existing deivce.
-        $this->assertEquals(false, (boolean)self::$state->deviceExists('dev123', 'mike'));
+        $this->assertEquals(false, (bool) self::$state->deviceExists('dev123', 'mike'));
 
         // Can't use setExpectedException here since it stops the rest
         // of the method from running when it's thrown.
@@ -35,9 +38,9 @@ class TestBase extends TestCase
         $deviceInfo->id = 'dev123';
         $deviceInfo->user = 'mike';
         $deviceInfo->policykey = 456;
-        $deviceInfo->supported = array();
+        $deviceInfo->supported = [];
         $deviceInfo->save();
-        $this->assertEquals(true, (boolean)self::$state->deviceExists('dev123', 'mike'));
+        $this->assertEquals(true, (bool) self::$state->deviceExists('dev123', 'mike'));
 
         $di = self::$state->loadDeviceInfo('dev123', 'mike');
         $this->assertEquals($deviceInfo, $di);
@@ -58,7 +61,7 @@ class TestBase extends TestCase
         $deviceInfo->id = 'dev123';
         $deviceInfo->user = 'ashley';
         $deviceInfo->policykey = 123;
-        $deviceInfo->supported = array();
+        $deviceInfo->supported = [];
         $deviceInfo->save();
 
         $devices = self::$state->listDevices();
@@ -99,10 +102,10 @@ class TestBase extends TestCase
     protected function _loadStateTest()
     {
         $this->markTestSkipped();
-        $collection = array(
+        $collection = [
             'serverid' => '@Contacts@',
             'folderid' => '@Contacts@',
-            'class' => Horde_ActiveSync::CLASS_CONTACTS);
+            'class' => Horde_ActiveSync::CLASS_CONTACTS];
         self::$state->loadDeviceInfo('dev123', 'mike');
         self::$state->loadState($collection, 0, Horde_ActiveSync::REQUEST_TYPE_SYNC, 'abcdef');
         self::$state->setNewSyncKey('{51941e99-0b9c-41f8-b678-1532c0a8015f}1');
@@ -112,13 +115,13 @@ class TestBase extends TestCase
     protected function _testCacheInitialState()
     {
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
-        $this->assertEquals(array(), $cache->getCollections());
-        $this->assertEquals(array(), $cache->getCollections(true));
+        $this->assertEquals([], $cache->getCollections());
+        $this->assertEquals([], $cache->getCollections(true));
         $this->assertEquals(0, $cache->countCollections());
         $this->assertEquals(false, $cache->collectionExists('@Contacts@'));
         $this->assertEquals(false, $cache->collectionIsPingable('@Contacts@'));
         $this->assertEquals(false, $cache->collectionIsPingable('@Contacts@'));
-        $this->assertEquals(array(), $cache->getFolders());
+        $this->assertEquals([], $cache->getFolders());
         $this->assertEquals(false, $cache->getFolder('@Contacts@'));
     }
 
@@ -128,44 +131,44 @@ class TestBase extends TestCase
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
 
         // First Fixture
-        $folder = new Horde_ActiveSync_Message_Folder((array('logger' => $log->getLogger(), 'protocolversion' => Horde_ActiveSync::VERSION_TWELVEONE)));
+        $folder = new Horde_ActiveSync_Message_Folder((['logger' => $log->getLogger(), 'protocolversion' => Horde_ActiveSync::VERSION_TWELVEONE]));
         $folder->type = Horde_ActiveSync::FOLDER_TYPE_CONTACT;
         $folder->serverid = '@Contacts@';
         $folder->_serverid = '@Contacts@';
         $cache->updateFolder($folder);
 
         // Second fixture
-        $folder = new Horde_ActiveSync_Message_Folder((array('logger' => $log->getLogger(), 'protocolversion' => Horde_ActiveSync::VERSION_TWELVEONE)));
+        $folder = new Horde_ActiveSync_Message_Folder((['logger' => $log->getLogger(), 'protocolversion' => Horde_ActiveSync::VERSION_TWELVEONE]));
         $folder->type = Horde_ActiveSync::FOLDER_TYPE_INBOX;
         $folder->serverid = '519422f1-4c5c-4547-946a-1701c0a8015f';
         $folder->_serverid = 'INBOX';
         $cache->updateFolder($folder);
 
-        $expected = array(
-            '@Contacts@' => array(
+        $expected = [
+            '@Contacts@' => [
                 'class' => 'Contacts',
                 'serverid' => '@Contacts@',
-                'type' => 9
-            ),
-            '519422f1-4c5c-4547-946a-1701c0a8015f' => array(
+                'type' => 9,
+            ],
+            '519422f1-4c5c-4547-946a-1701c0a8015f' => [
                 'class' => 'Email',
                 'serverid' => 'INBOX',
-                'type' => 2
-            )
-        );
+                'type' => 2,
+            ],
+        ];
         $this->assertEquals($expected, $cache->getFolders());
-        $expected = array(
+        $expected = [
             'class' => 'Email',
             'serverid' => 'INBOX',
-            'type' => 2
-        );
+            'type' => 2,
+        ];
         $this->assertEquals($expected, $cache->getFolder('519422f1-4c5c-4547-946a-1701c0a8015f'));
         $cache->save();
     }
 
     protected function _testCacheDataRestrictFields()
     {
-        $cache_data = self::$state->getSyncCache('dev123', 'mike', array('folders'));
+        $cache_data = self::$state->getSyncCache('dev123', 'mike', ['folders']);
         $this->assertCount(1, $cache_data);
         $this->assertEquals('folders', key($cache_data));
     }
@@ -173,65 +176,65 @@ class TestBase extends TestCase
     protected function _testCacheFoldersPersistence()
     {
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
-        $expected = array(
-            '@Contacts@' => array(
+        $expected = [
+            '@Contacts@' => [
                 'class' => 'Contacts',
                 'serverid' => '@Contacts@',
-                'type' => 9
-            ),
-            '519422f1-4c5c-4547-946a-1701c0a8015f' => array(
+                'type' => 9,
+            ],
+            '519422f1-4c5c-4547-946a-1701c0a8015f' => [
                 'class' => 'Email',
                 'serverid' => 'INBOX',
-                'type' => 2
-            )
-        );
+                'type' => 2,
+            ],
+        ];
         $this->assertEquals($expected, $cache->getFolders());
-        $expected = array(
+        $expected = [
             'class' => 'Email',
             'serverid' => 'INBOX',
-            'type' => 2
-        );
+            'type' => 2,
+        ];
         $this->assertEquals($expected, $cache->getFolder('519422f1-4c5c-4547-946a-1701c0a8015f'));
     }
 
     protected function _testCacheCollections()
     {
-        $collections = array(
-            '519422f1-4c5c-4547-946a-1701c0a8015f' => array(
+        $collections = [
+            '519422f1-4c5c-4547-946a-1701c0a8015f' => [
                 'class' => 'Email',
                 'windowsize' => 5,
                 'truncation' => 0,
                 'mimesupport' => 0,
                 'mimetruncation' => 8,
                 'conflict' => 1,
-                'bodyprefs' => array(
+                'bodyprefs' => [
                     'wanted' => 2,
-                    2 => array(
+                    2 => [
                         'type' => 2,
-                        'truncationsize' => 200000)
-                ),
+                        'truncationsize' => 200000],
+                ],
                 'deletesasmoves' => 1,
                 'filtertype' => 5,
                 'id' => '519422f1-4c5c-4547-946a-1701c0a8015f',
-                'serverid' => 'INBOX'),
-            '@Contacts@' => array(
+                'serverid' => 'INBOX'],
+            '@Contacts@' => [
                 'class' => 'Contacts',
                 'windowsize' => 4,
                 'truncation' => 0,
                 'mimesupport' => 0,
                 'mimetruncation' => 8,
                 'conflict' => 1,
-                'bodyprefs' => array(
+                'bodyprefs' => [
                     'wanted' => 1,
-                    1 => array(
+                    1 => [
                         'type' => 1,
-                        'truncationsize' => 200000)
+                        'truncationsize' => 200000],
 
-                ),
+                ],
                 'deletesasmoves' => 1,
                 'id' => '@Contacts@',
-                'serverid' => '@Contacts@')
-        );
+                'serverid' => '@Contacts@'],
+        ];
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
         foreach ($collections as $collection) {
             $cache->addCollection($collection);
@@ -245,7 +248,7 @@ class TestBase extends TestCase
 
         $this->assertEquals(2, $cache->countCollections());
         $this->assertEquals($collections, $cache->getCollections(false));
-        $this->assertEquals(array(), $cache->getCollections(true));
+        $this->assertEquals([], $cache->getCollections(true));
         $this->assertEquals(true, $cache->collectionExists('@Contacts@'));
         $this->assertEquals(true, $cache->collectionExists('519422f1-4c5c-4547-946a-1701c0a8015f'));
         $this->assertEquals(false, $cache->collectionExists('foo'));
@@ -256,8 +259,9 @@ class TestBase extends TestCase
         $cache->removePingableCollection('@Contacts@');
         $this->assertEquals(false, $cache->collectionIsPingable('@Contacts@'));
         $cache->updateCollection(
-            array('id' => '519422f1-4c5c-4547-946a-1701c0a8015f', 'newsynckey' => '{51941e99-0b9c-41f8-b678-1532c0a8015f}2'),
-            array('newsynckey' => true));
+            ['id' => '519422f1-4c5c-4547-946a-1701c0a8015f', 'newsynckey' => '{51941e99-0b9c-41f8-b678-1532c0a8015f}2'],
+            ['newsynckey' => true]
+        );
         $cache->save();
 
         // Now we should have a lastsynckey
@@ -277,23 +281,23 @@ class TestBase extends TestCase
     protected function _testCollectionsFromCache()
     {
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
-        $collections = array('519422f1-4c5c-4547-946a-1701c0a8015f' => array('id' => '519422f1-4c5c-4547-946a-1701c0a8015f'));
-        $expected = array('519422f1-4c5c-4547-946a-1701c0a8015f' => array(
+        $collections = ['519422f1-4c5c-4547-946a-1701c0a8015f' => ['id' => '519422f1-4c5c-4547-946a-1701c0a8015f']];
+        $expected = ['519422f1-4c5c-4547-946a-1701c0a8015f' => [
             'class' => 'Email',
             'windowsize' => 5,
             'truncation' => 0,
             'mimesupport' => 0,
             'mimetruncation' => 8,
-            'bodyprefs' => array(
+            'bodyprefs' => [
                 'wanted' => 2,
-                2 => array(
+                2 => [
                     'type' => 2,
-                    'truncationsize' => 200000)
-            ),
+                    'truncationsize' => 200000],
+            ],
             'filtertype' => 5,
             'id' => '519422f1-4c5c-4547-946a-1701c0a8015f',
             'serverid' => 'INBOX',
-            'type' => 2));
+            'type' => 2]];
         $cache->validateCollectionsFromCache($collections);
         $this->assertEquals($expected, $collections);
     }
@@ -303,8 +307,9 @@ class TestBase extends TestCase
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
         $newcache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
         $newcache->updateCollection(
-            array('id' => '519422f1-4c5c-4547-946a-1701c0a8015f', 'newsynckey' => '{51941e99-0b9c-41f8-b678-1532c0a8015f}3'),
-            array('newsynckey' => true));
+            ['id' => '519422f1-4c5c-4547-946a-1701c0a8015f', 'newsynckey' => '{51941e99-0b9c-41f8-b678-1532c0a8015f}3'],
+            ['newsynckey' => true]
+        );
         sleep(1);
         $newcache->save();
 
@@ -330,16 +335,16 @@ class TestBase extends TestCase
     protected function _testCacheUniqueness()
     {
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'bob', self::$logger->getLogger());
-        $this->assertEquals(array(), $cache->getFolders());
+        $this->assertEquals([], $cache->getFolders());
 
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev456', 'mike', self::$logger->getLogger());
-        $this->assertEquals(array(), $cache->getFolders());
+        $this->assertEquals([], $cache->getFolders());
     }
 
     protected function _testGetStateWithNoState()
     {
         self::$state->loadDeviceInfo('dev123');
-        self::$state->loadState(array(), 0, Horde_ActiveSync::REQUEST_TYPE_FOLDERSYNC);
+        self::$state->loadState([], 0, Horde_ActiveSync::REQUEST_TYPE_FOLDERSYNC);
     }
 
     protected function _testCollectionHandler()
@@ -373,23 +378,23 @@ class TestBase extends TestCase
 
         // Now import a collection that IS different (which is the only reason
         // to have imported colletions with PARTIAL).
-        $col = array(
+        $col = [
             'id' => '519422f1-4c5c-4547-946a-1701c0a8015f',
             'windowsize' => 5,
             'truncation' => 0,
             'mimesupport' => 0,
             'mimetruncation' => 8,
             'conflict' => 1,
-            'bodyprefs' => array(
+            'bodyprefs' => [
                 'wanted' => 2,
-                2 => array(
+                2 => [
                     'type' => 2,
-                    'truncationsize' => 100000)
-            ),
+                    'truncationsize' => 100000],
+            ],
             'synckey' => '{51941e99-0b9c-41f8-b678-1532c0a8015f}3',
             'deletesasmoves' => 1,
             'filtertype' => 5,
-        );
+        ];
         $collections->addCollection($col);
         $this->assertEquals(2, $collections->collectionCount());
         $this->assertEquals(true, $collections->initPartialSync());
@@ -414,23 +419,23 @@ class TestBase extends TestCase
         // Pretent to read a new collection in from xml.
         // This one is identical to what we already have, so this should also
         // fail.
-        $col = array(
+        $col = [
             'id' => '519422f1-4c5c-4547-946a-1701c0a8015f',
             'windowsize' => 5,
             'truncation' => 0,
             'mimesupport' => 0,
             'mimetruncation' => 8,
             'conflict' => 1,
-            'bodyprefs' => array(
+            'bodyprefs' => [
                 'wanted' => 2,
-                2 => array(
+                2 => [
                     'type' => 2,
-                    'truncationsize' => 200000)
-            ),
+                    'truncationsize' => 200000],
+            ],
             'synckey' => '{517541cc-b188-478d-9e1a-fa49c0a8015f}3',
             'deletesasmoves' => 1,
             'filtertype' => 5,
-        );
+        ];
         $collections->addCollection($col);
         $this->assertEquals(false, $collections->initPartialSync());
 
@@ -446,7 +451,7 @@ class TestBase extends TestCase
         $this->markTestIncomplete('No idea why the cache does not load the collections here.');
         $collections = $this->getCollectionHandler();
         $collections->loadCollectionsFromCache();
-        $collections->setHeartbeat(array('hbinterval' => 1));
+        $collections->setHeartbeat(['hbinterval' => 1]);
         $result = $collections->initPartialSync();
         $this->assertEquals(true, $result);
     }
@@ -477,28 +482,28 @@ class TestBase extends TestCase
     {
         // Need to prime the cache with a synckey for contacts so we have
         // another one to load for the test.
-        $col = array('id' => '@Contacts@', 'newsynckey' => '{517541cc-b188-478d-aaaa-fa49c0a8015f}35');
+        $col = ['id' => '@Contacts@', 'newsynckey' => '{517541cc-b188-478d-aaaa-fa49c0a8015f}35'];
         $cache = new Horde_ActiveSync_SyncCache(self::$state, 'dev123', 'mike', self::$logger->getLogger());
-        $cache->updateCollection($col, array('newsynckey' => true));
+        $cache->updateCollection($col, ['newsynckey' => true]);
         $cache->save();
         $collections = $this->getCollectionHandler();
-        $col = array(
+        $col = [
             'id' => '519422f1-4c5c-4547-946a-1701c0a8015f',
             'windowsize' => 5,
             'truncation' => 0,
             'mimesupport' => 0,
             'mimetruncation' => 8,
             'conflict' => 1,
-            'bodyprefs' => array(
+            'bodyprefs' => [
                 'wanted' => 2,
-                2 => array(
+                2 => [
                     'type' => 2,
-                    'truncationsize' => 300000)
-            ),
+                    'truncationsize' => 300000],
+            ],
             'synckey' => '{517541cc-b188-478d-9e1a-fa49c0a8015f}3',
             'deletesasmoves' => 1,
             'filtertype' => 5,
-        );
+        ];
         $collections->addCollection($col);
         $collections->initPartialSync();
         $this->assertEquals(2, $collections->collectionCount());
@@ -510,23 +515,23 @@ class TestBase extends TestCase
     protected function _testChangingFilterType()
     {
         $collections = $this->getCollectionHandler();
-        $col = array(
+        $col = [
             'id' => '519422f1-4c5c-4547-946a-1701c0a8015f',
             'windowsize' => 5,
             'truncation' => 0,
             'mimesupport' => 0,
             'mimetruncation' => 8,
             'conflict' => 1,
-            'bodyprefs' => array(
+            'bodyprefs' => [
                 'wanted' => 2,
-                2 => array(
+                2 => [
                     'type' => 2,
-                    'truncationsize' => 200000)
-            ),
+                    'truncationsize' => 200000],
+            ],
             'synckey' => '{517541cc-b188-478d-9e1a-fa49c0a8015f}96',
             'deletesasmoves' => 1,
             'filtertype' => 4,
-        );
+        ];
         $collections->addCollection($col);
         $this->assertEquals(false, $collections->checkFilterType($col['id'], $col['filtertype']));
     }
@@ -543,33 +548,33 @@ class TestBase extends TestCase
         self::$state->setBackend($this->getMockDriver());
         $collections = $this->getCollectionHandler(true);
         $seen = $collections->initHierarchySync(0);
-        $this->assertEquals(array(), $seen);
-        $expected = array(
-            array(
+        $this->assertEquals([], $seen);
+        $expected = [
+            [
                 'type' => 'change',
                 'flags' => 'NewMessage',
                 'id' => '@Tasks@',
-                'serverid' => '@Tasks@'
-            ),
-            array(
+                'serverid' => '@Tasks@',
+            ],
+            [
                 'type' => 'change',
                 'flags' => 'NewMessage',
                 'id' => '@Notes@',
-                'serverid' => '@Notes@'
-            ),
-            array(
+                'serverid' => '@Notes@',
+            ],
+            [
                 'type' => 'change',
                 'flags' => 'NewMessage',
                 'id' => '@Contacts@',
-                'serverid' => '@Contacts@'
-            ),
-            array(
+                'serverid' => '@Contacts@',
+            ],
+            [
                 'type' => 'change',
                 'flags' => 'NewMessage',
                 'id' => '@Calendar@',
-                'serverid' => '@Calendar@'
-            )
-        );
+                'serverid' => '@Calendar@',
+            ],
+        ];
         $changes = $collections->getHierarchyChanges();
         $this->assertEquals($expected, $changes);
     }
@@ -577,11 +582,11 @@ class TestBase extends TestCase
     public function getMockDriver()
     {
         $connector = new Horde_ActiveSync_Driver_MockConnector();
-        $driver = new Horde_ActiveSync_Driver_Mock(array(
+        $driver = new Horde_ActiveSync_Driver_Mock([
             'connector' => $connector,
             'auth' => false,
             'imap' => false,
-            'state' => self::$state));
+            'state' => self::$state]);
 
         return $driver;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde_ActiveSync_Folder_Collection::
  *
@@ -20,7 +21,7 @@
  */
 class Horde_ActiveSync_Folder_Collection extends Horde_ActiveSync_Folder_Base implements Serializable
 {
-    const VERSION = 1;
+    public const VERSION = 1;
 
     /**
      * Updates the internal UID cache, and clears the internal
@@ -41,7 +42,8 @@ class Horde_ActiveSync_Folder_Collection extends Horde_ActiveSync_Folder_Base im
         return sprintf(
             'serverid: %s\nclass: %s\n',
             $this->serverid(),
-            $this->collectionClass());
+            $this->collectionClass()
+        );
     }
 
     /**

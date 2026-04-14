@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unit tests for Horde_ActiveSync_Folder_Imap
  *
@@ -6,7 +7,9 @@
  * @category Horde
  * @package ActiveSync
  */
+
 namespace Horde\ActiveSync;
+
 use Horde_Test_Case as TestCase;
 use Horde\ActiveSync\Factory\TestServer;
 
@@ -22,7 +25,7 @@ class MessageBodyDataTest extends TestCase
 
         $imap_factory = new Horde_ActiveSync_Stub_ImapFactory();
         $imap_factory->fixture = $imap_client;
-        $adapter = new Horde_ActiveSync_Imap_Adapter(array('factory' => $imap_factory));
+        $adapter = new Horde_ActiveSync_Imap_Adapter(['factory' => $imap_factory]);
 
         $this->markTestIncomplete("Can't use serialized Horde_Mime_Part");
 
@@ -30,22 +33,22 @@ class MessageBodyDataTest extends TestCase
         $basePart = unserialize(base64_decode($horde_mime_fixture));
 
         $mbd = new Horde_ActiveSync_Imap_MessageBodyData(
-            array(
+            [
                 'imap' => $imap_client,
                 'mime' => $basePart,
                 'uid' => 1,
-                'mbox' => new Horde_Imap_Client_Mailbox('INBOX')),
-            array(
+                'mbox' => new Horde_Imap_Client_Mailbox('INBOX')],
+            [
                 'protocolversion' => 14.1,
-                'bodyprefs' => array(
-                    Horde_ActiveSync::BODYPREF_TYPE_HTML => array(
+                'bodyprefs' => [
+                    Horde_ActiveSync::BODYPREF_TYPE_HTML => [
                         'truncationsize' => 10240,
-                        'allornone' => 0),
-                    Horde_ActiveSync::BODYPREF_TYPE_PLAIN => array(
+                        'allornone' => 0],
+                    Horde_ActiveSync::BODYPREF_TYPE_PLAIN => [
                         'truncationsize' => 10240,
-                        'allornone' => 0)
-                )
-            )
+                        'allornone' => 0],
+                ],
+            ]
         );
 
         $this->assertEquals(10240, $mbd->html['body']->length(true));
@@ -62,7 +65,7 @@ class MessageBodyDataTest extends TestCase
 
         $imap_factory = new Horde_ActiveSync_Stub_ImapFactory();
         $imap_factory->fixture = $imap_client;
-        $adapter = new Horde_ActiveSync_Imap_Adapter(array('factory' => $imap_factory));
+        $adapter = new Horde_ActiveSync_Imap_Adapter(['factory' => $imap_factory]);
 
         $this->markTestIncomplete("Can't use serialized Horde_Mime_Part");
 
@@ -70,22 +73,22 @@ class MessageBodyDataTest extends TestCase
         $basePart = unserialize(base64_decode($horde_mime_fixture));
 
         $mbd = new Horde_ActiveSync_Imap_MessageBodyData(
-            array(
+            [
                 'imap' => $imap_client,
                 'mime' => $basePart,
                 'uid' => 1,
-                'mbox' => new Horde_Imap_Client_Mailbox('INBOX')),
-            array(
+                'mbox' => new Horde_Imap_Client_Mailbox('INBOX')],
+            [
                 'protocolversion' => 14.1,
-                'bodyprefs' => array(
-                    Horde_ActiveSync::BODYPREF_TYPE_HTML => array(
+                'bodyprefs' => [
+                    Horde_ActiveSync::BODYPREF_TYPE_HTML => [
                         'truncationsize' => false,
-                        'allornone' => 0),
-                    Horde_ActiveSync::BODYPREF_TYPE_PLAIN => array(
+                        'allornone' => 0],
+                    Horde_ActiveSync::BODYPREF_TYPE_PLAIN => [
                         'truncationsize' => false,
-                        'allornone' => 0)
-                )
-            )
+                        'allornone' => 0],
+                ],
+            ]
         );
 
         $this->assertEquals(26844, $mbd->html['body']->length(true));

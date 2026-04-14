@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author     Jan Schneider <jan@horde.org>
  * @license    http://www.horde.org/licenses/gpl GPLv2
@@ -6,7 +7,9 @@
  * @package    Horde_ActiveSync
  * @subpackage UnitTests
  */
+
 namespace Horde\ActiveSync\StateTest\Sql;
+
 use Horde\ActiveSync\StateTest\Sql\TestBase;
 
 class Oci8Test extends TestBase

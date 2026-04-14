@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Horde_ActiveSync_Folder_RI::
  *
@@ -20,7 +21,7 @@
  */
 class Horde_ActiveSync_Folder_RI extends Horde_ActiveSync_Folder_Base implements Serializable
 {
-    const VERSION = 1;
+    public const VERSION = 1;
 
     /**
      * The current list of recipient email addresses.
@@ -79,7 +80,8 @@ class Horde_ActiveSync_Folder_RI extends Horde_ActiveSync_Folder_Base implements
         return sprintf(
             'serverid: %s\nclass: %s\n',
             $this->serverid(),
-            $this->collectionClass());
+            $this->collectionClass()
+        );
     }
 
     /**
