@@ -131,23 +131,23 @@ class Horde_ActiveSync_Imap_Adapter
         $imap = $this->_getImapOb();
         try {
             $imap->createMailbox($mbox);
-            $imap->subscribeMailbox($mbox, true);
         } catch (Horde_Imap_Client_Exception $e) {
-            if ($e->getCode() == Horde_Imap_Client_Exception::ALREADYEXISTS) {
+            if ($e->getCode() === Horde_Imap_Client_Exception::ALREADYEXISTS) {
                 $this->_logger->warn(sprintf(
                     'Mailbox %s already exists, subscribing to it.',
                     $name
                 ));
-                try {
-                    $imap->subscribeMailbox($mbox, true);
-                } catch (Horde_Imap_Client_Exception $e) {
-                    // Exists, but could not subscribe to it, something is
-                    // *really* wrong.
-                    throw new Horde_ActiveSync_Exception_FolderExists('Folder Exists!');
-                }
             } else {
                 throw new Horde_ActiveSync_Exception($e);
             }
+        }
+
+        try {
+            $imap->subscribeMailbox($mbox, true);
+        } catch (Horde_Imap_Client_Exception $e) {
+            // Exists, but could not subscribe to it, something is
+            // *really* wrong.
+            throw new Horde_ActiveSync_Exception_FolderExists('Folder Exists!');
         }
 
         return $mbox->utf8;
